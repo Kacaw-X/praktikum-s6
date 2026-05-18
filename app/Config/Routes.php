@@ -24,10 +24,7 @@ $routes->get('akademik/nilai/(:segment)', 'Akademik::nilai/$1');
 $routes->get('demo', 'Demo::index');
 
 $routes->get('/profil', 'Profil::index');
-
 $routes->get('/galeri', 'Galeri::index');
-
-// Route CRUD Buku
 $routes->get('buku', 'Buku::index');
 $routes->get('buku/tambah', 'Buku::tambah');
 $routes->post('buku/simpan', 'Buku::simpan');
@@ -36,3 +33,10 @@ $routes->get('buku/edit/(:num)', 'Buku::edit/$1');
 $routes->post('buku/update/(:num)', 'Buku::update/$1');
 $routes->get('buku/hapus/(:num)', 'Buku::hapus/$1');
 $routes->get('buku/ekspor', 'Buku::ekspor');
+$routes->get('/kategori', 'Kategori::index');
+$routes->get('/kategori/tambah', 'Kategori::tambah');
+$routes->post('/kategori/simpan', 'Kategori::simpan');
+$routes->get('/kategori/edit/(:num)', 'Kategori::edit/$1');
+$routes->post('/kategori/update/(:num)', 'Kategori::update/$1');
+$routes->get('/kategori/hapus/(:num)', 'Kategori::hapus/$1');
+$routes->get('/buku/statistik', 'Buku::statistik');
