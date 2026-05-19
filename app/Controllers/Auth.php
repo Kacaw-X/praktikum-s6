@@ -38,6 +38,12 @@ class Auth extends BaseController
 
         $identifier = $this->request->getPost('identifier');
         $password   = $this->request->getPost('password');
+
+        // Cek apakah akun sedang dikunci
+        if (session()->getTempdata('login_locked')) {
+            return redirect()->to('/login')->with('error', 'Akun dikunci selama 10 menit akibat terlalu banyak percobaan login.');
+        }
+
         $user       = $this->userModel->cariUserAktif($identifier);
 
         // Gunakan pesan generik agar attacker tidak tahu
@@ -49,11 +55,24 @@ class Auth extends BaseController
             // untuk mencegah timing attack yang mengukur waktu respons
             if (!$user) password_verify($password, '$2y$12$dummy_hash_untuk_timing');
 
+            // Tambah hitungan percobaan login gagal
+            $attempts = session()->get('login_attempts') ?? 0;
+            $attempts++;
+            session()->set('login_attempts', $attempts);
+
+            if ($attempts >= 5) {
+                // Kunci selama 10 menit (600 detik)
+                session()->setTempdata('login_locked', true, 600);
+                session()->remove('login_attempts');
+                $pesanError = 'Akun dikunci selama 10 menit akibat terlalu banyak percobaan login.';
+            }
+
             session()->setFlashdata('error', $pesanError);
             return redirect()->to('/login');
         }
 
-        // Login berhasil — simpan data ke session
+        // Login berhasil — reset percobaan dan simpan data ke session
+        session()->remove('login_attempts');
         session()->set([
             'user_id'   => $user['id'],
             'username'  => $user['username'],
